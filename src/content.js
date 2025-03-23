@@ -22,40 +22,40 @@ function createTranslateButton() {
 }
 
 function createPopup() {
-    // ここに翻訳結果を表示する処理を実装
+  // ここに翻訳結果を表示する処理を実装
 
-    // 例: ポップアップ要素を作成して表示
-    const popup = document.createElement('div');
+  // 例: ポップアップ要素を作成して表示
+  const popup = document.createElement('div');
 
-    popup.id = 'translator-result-popup';
-    popup.style.position = 'absolute';
-    popup.style.display = 'none';
-    popup.style.top = '0px';
-    popup.style.left = '0px';
-    popup.style.width = '300px';
-    popup.style.zIndex = '10000';
+  popup.id = 'translator-result-popup';
+  popup.style.position = 'absolute';
+  popup.style.display = 'none';
+  popup.style.top = '0px';
+  popup.style.left = '0px';
+  popup.style.width = '300px';
+  popup.style.zIndex = '10000';
 
-    popup.style.color = 'gray';
-    popup.style.background = 'white';
-    popup.style.padding = '10px';
-    popup.style.borderRadius = '4px';
-    popup.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+  popup.style.color = 'gray';
+  popup.style.background = 'white';
+  popup.style.padding = '10px';
+  popup.style.borderRadius = '4px';
+  popup.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
 
-    popup.innerHTML = `
+  popup.innerHTML = `
         <div>
             <button id="translator-closeButton">❌</button>
             <div id="translator-translated-text"></div>
         </div>
     `;
 
-    const closeButton = popup.querySelector('#translator-closeButton');
-    closeButton.style.float = 'right';
-    closeButton.style.marginLeft = '10px';
-    closeButton.style.background = 'none';
-    closeButton.style.border = 'none';
-    closeButton.addEventListener('click', () => popup.style.display = 'none');
+  const closeButton = popup.querySelector('#translator-closeButton');
+  closeButton.style.float = 'right';
+  closeButton.style.marginLeft = '10px';
+  closeButton.style.background = 'none';
+  closeButton.style.border = 'none';
+  closeButton.addEventListener('click', () => popup.style.display = 'none');
 
-    return popup;
+  return popup;
 }
 
 // テキスト選択時の処理
@@ -88,6 +88,9 @@ function handleTextSelection() {
 
 // 翻訳処理を実行する関数
 function translateSelectedText(text) {
+  const loaderText = `<div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;"></div>`;
+  showTranslationResult(loaderText, false);
+
   // ここに既存の翻訳処理を実装
   // 例: chrome.runtime.sendMessage を使用してバックグラウンドスクリプトに翻訳リクエストを送信
   chrome.runtime.sendMessage({
@@ -95,12 +98,18 @@ function translateSelectedText(text) {
     text: text,
   }, response => {
     // 翻訳結果を表示する処理
-    showTranslationResult(response.translatedText || response.error);
+    showTranslationResult(
+        response.translatedText || response.error,
+        true,
+    );
   });
 }
 
 // 翻訳結果を表示する関数
-function showTranslationResult(translatedText) {
+function showTranslationResult(
+    translatedText,
+    viewCloseButton,
+) {
   // ポップアップの位置を変更して表示
   const popup = document.getElementById('translator-result-popup');
   popup.style.display = 'block';
@@ -109,8 +118,14 @@ function showTranslationResult(translatedText) {
   popup.style.width = selectionRect.width + 'px';
 
   // 翻訳結果のテキストを変更
-  const divTranslatedText = document.getElementById('translator-translated-text');
+  const divTranslatedText = document.getElementById(
+      'translator-translated-text');
   divTranslatedText.innerHTML = translatedText;
+
+  const closeButton = document.getElementById('translator-closeButton');
+  if (closeButton) {
+    closeButton.style.display = viewCloseButton ? 'block' : 'none';
+  }
 }
 
 // 初期化
@@ -129,6 +144,16 @@ function init() {
       button.style.display = 'none';
     }
   });
+
+// CSS for loading animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+  document.head.appendChild(style);
 }
 
 // ページ読み込み完了時に初期化
