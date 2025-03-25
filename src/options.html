@@ -1,55 +1,66 @@
 <!DOCTYPE html>
 <html lang="ja" data-google-analytics-opt-out>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Extension Settings</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
 
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
 
-        input {
-            padding: 5px;
-            margin-top: 5px;
-            width: 300px;
-        }
+      input {
+        padding: 5px;
+        margin-top: 5px;
+        width: 300px;
+      }
 
-        button {
-            margin-top: 10px;
-            padding: 5px 10px;
-        }
+      button {
+        margin-top: 10px;
+        padding: 5px 10px;
+      }
     </style>
-    <script type="module"  src="options.js"></script>
-</head>
-<body>
+    <script type="module" src="options.js"></script>
+  </head>
+  <body>
+    <h1>翻訳に利用する</h1>
+    <label for="translatorType"
+      >翻訳に利用するサービスをを入力してください:(google, deepl)</label
+    >
+    <input type="text" id="translatorType" />
 
-<h1>翻訳に利用する</h1>
-<label for="translatorType">翻訳に利用するサービスをを入力してください:(google, deepl)</label>
-<input type="text" id="translatorType">
+    <h1>Google API キー設定</h1>
+    <a target="_blank" href="https://cloud.google.com/translate/docs/?hl=ja"
+      >ドキュメント</a
+    >
+    <a
+      target="_blank"
+      href="https://cloud.google.com/translate/docs/reference/rest/v2/translate"
+      >ドキュメント</a
+    >
 
-<h1>Google API キー設定</h1>
-<a target="_blank" href="https://cloud.google.com/translate/docs/?hl=ja">ドキュメント</a>
-<a target="_blank" href="https://cloud.google.com/translate/docs/reference/rest/v2/translate">ドキュメント</a>
+    <a
+      target="_blank"
+      href="https://console.cloud.google.com/apis/api/translate.googleapis.com/credentials"
+      >Google APIキー発行ページ</a
+    >
+    <p>認証情報： https://console.developers.google.com/apis/credentials</p>
+    <label for="googleApiKey">Google API キーを入力してください:</label>
+    <input type="text" id="googleApiKey" />
 
-<a target="_blank"
-href="https://console.cloud.google.com/apis/api/translate.googleapis.com/credentials">Google APIキー発行ページ</a>
-<p>認証情報： https://console.developers.google.com/apis/credentials</p>
-<label for="googleApiKey">Google API キーを入力してください:</label>
-<input type="text" id="googleApiKey">
+    <h1>DeepL API キー設定</h1>
+    <a target="_blank" href="https://www.deepl.com/ja/your-account/keys"
+      >DeepL APIキー発行ページ</a
+    >
+    <label for="deeplApiKey">DeepL API キーを入力してください:</label>
+    <input type="text" id="deeplApiKey" />
 
-<h1>DeepL API キー設定</h1>
-<a target="_blank"
-   href="https://www.deepl.com/ja/your-account/keys">DeepL APIキー発行ページ</a>
-<label for="deeplApiKey">DeepL API キーを入力してください:</label>
-<input type="text" id="deeplApiKey">
-
-<button id="saveButton">保存</button>
-<p id="status"></p>
-</body>
+    <button id="saveButton">保存</button>
+    <p id="status"></p>
+  </body>
 </html>

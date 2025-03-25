@@ -3,12 +3,7 @@
   "name": "Text Translator",
   "version": "1.0",
   "description": "選択したテキストを DeepL API で翻訳してポップアップ表示する拡張機能です。",
-  "permissions": [
-    "contextMenus",
-    "storage",
-    "activeTab",
-    "scripting"
-  ],
+  "permissions": ["contextMenus", "storage", "activeTab", "scripting"],
   "background": {
     "type": "module",
     "service_worker": "background.js"
@@ -19,12 +14,8 @@
   ],
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
       "run_at": "document_end"
     }
   ],

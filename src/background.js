@@ -1,8 +1,8 @@
 // background.js
 
-import {StorageKeys} from './Enums/StorageKeys.js';
-import {BaseOptionFailedError} from './Error/BaseOptionFailedError.js';
-import {getTranslator} from './translator.js';
+import { StorageKeys } from './Enums/StorageKeys.js'
+import { BaseOptionFailedError } from './Error/BaseOptionFailedError.js'
+import { getTranslator } from './translator.js'
 
 // chrome.runtime.onInstalled.addListener(() => {
 //   chrome.contextMenus.create({
@@ -20,40 +20,39 @@ import {getTranslator} from './translator.js';
 
 // 翻訳処理
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  switch (request.action) {
+    case 'translate':
+      ;(async () => {
+        const responseMessage = await messageHandleTranslate(request)
+        sendResponse(responseMessage)
+      })()
+      return
+    case 'openOptionsPage':
+      openOptionsPage()
+      return
+  }
 
-  (async () => {
-    switch (request.action) {
-      case 'translate':
-        const responseMessage = await messageHandleTranslate(request);
-        sendResponse(responseMessage);
-        return;
-      case 'openOptionsPage':
-        openOptionsPage();
-        return;
-    }
-  })();
-
-  return true;
-});
+  return true
+})
 
 async function messageHandleTranslate(request) {
   try {
-    const {translatorType} = await chrome.storage.sync.get([
+    const { translatorType } = await chrome.storage.sync.get([
       StorageKeys.TRANSLATOR_TYPE,
-    ]);
+    ])
 
-    const translate = getTranslator(translatorType);
+    const translate = getTranslator(translatorType)
 
-    const translatedText = await translate(request.text);
+    const translatedText = await translate(request.text)
 
-    return {translatedText: translatedText};
+    return { translatedText: translatedText }
   } catch (error) {
-    let errorMessage = error.message;
-    let errorType = 'unknown';
+    let errorMessage = error.message
+    let errorType = 'unknown'
 
     if (error instanceof BaseOptionFailedError) {
-      errorType = error.constructor.name;
-      errorMessage = `${error.message} <span style="color: blue; cursor: pointer;" class="extension-openOptionsPage">設定画面を開く</span>`;
+      errorType = error.constructor.name
+      errorMessage = `${error.message} <span style="color: blue; cursor: pointer;" class="extension-openOptionsPage">設定画面を開く</span>`
     }
 
     return {
@@ -61,7 +60,7 @@ async function messageHandleTranslate(request) {
         message: errorMessage,
         type: errorType,
       },
-    };
+    }
   }
 }
 
@@ -69,9 +68,9 @@ async function messageHandleTranslate(request) {
 function openOptionsPage() {
   if (chrome.runtime.openOptionsPage) {
     // Chrome 42以降で利用可能
-    chrome.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage()
   } else {
     // 古いバージョン用のフォールバック
-    chrome.tabs.create({url: chrome.runtime.getURL('options.html')});
+    chrome.tabs.create({ url: chrome.runtime.getURL('options.html') })
   }
 }
