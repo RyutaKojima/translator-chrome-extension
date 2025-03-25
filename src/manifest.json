@@ -10,9 +10,11 @@
     "scripting"
   ],
   "background": {
+    "type": "module",
     "service_worker": "background.js"
   },
   "host_permissions": [
+    "https://translation.googleapis.com/language/translate/*",
     "https://api-free.deepl.com/*"
   ],
   "content_scripts": [

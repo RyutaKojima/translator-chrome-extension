@@ -1,69 +1,71 @@
 // background.js
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: 'translateText',
-    title: '選択したテキストを翻訳',
-    contexts: ['selection'],
-  });
-});
+import {StorageKeys} from './Enums/StorageKeys.js';
+import {BaseOptionFailedError} from './Error/BaseOptionFailedError.js';
+import {getTranslator} from './translator.js';
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'translateText' && info.selectionText) {
-    chrome.tabs.sendMessage(tab.id, {text: info.selectionText});
-  }
-});
+// chrome.runtime.onInstalled.addListener(() => {
+//   chrome.contextMenus.create({
+//     id: 'translateText',
+//     title: '選択したテキストを翻訳',
+//     contexts: ['selection'],
+//   });
+// });
 
-// DeepL API を使用した翻訳処理
+// chrome.contextMenus.onClicked.addListener((info, tab) => {
+//   if (info.menuItemId === 'translateText' && info.selectionText) {
+//     chrome.tabs.sendMessage(tab.id, {text: info.selectionText});
+//   }
+// });
+
+// 翻訳処理
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'translate') {
-    // ここに DeepL API を使用した翻訳処理を実装
-    // 例:
-    translateWithDeepL(request.text).then(translatedText => {
-      sendResponse({translatedText: translatedText});
-    }).catch(error => {
-      sendResponse({error: error.message});
-    });
 
-    return true; // 非同期レスポンスのために true を返す
-  }
+  (async () => {
+    switch (request.action) {
+      case 'translate':
+        const responseMessage = await messageHandleTranslate(request);
+        sendResponse(responseMessage);
+        return;
+      case 'openOptionsPage':
+        openOptionsPage();
+        return;
+    }
+  })();
+
+  return true;
 });
 
-// DeepL API を使用した翻訳関数の例
-async function translateWithDeepL(text) {
-  // ここに DeepL API を使用した翻訳処理を実装
-  // 保存された API キーを取得
-  const {deeplApiKey, targetLang} = await chrome.storage.sync.get([
-    'deeplApiKey',
-    'targetLang',
-  ]);
+async function messageHandleTranslate(request) {
+  try {
+    const {translatorType} = await chrome.storage.sync.get([
+      StorageKeys.TRANSLATOR_TYPE,
+    ]);
 
-  if (!deeplApiKey) {
-    openOptionsPage();
-    throw new Error('APIキーが設定されていません。');
+    const translate = getTranslator(translatorType);
+
+    const translatedText = await translate(request.text);
+
+    return {translatedText: translatedText};
+  } catch (error) {
+    let errorMessage = error.message;
+    let errorType = 'unknown';
+
+    if (error instanceof BaseOptionFailedError) {
+      errorType = error.constructor.name;
+      errorMessage = `${error.message} <span style="color: blue; cursor: pointer;" class="extension-openOptionsPage">設定画面を開く</span>`;
+    }
+
+    return {
+      error: {
+        message: errorMessage,
+        type: errorType,
+      },
+    };
   }
-
-  // API リクエスト
-  const response = await fetch('https://api-free.deepl.com/v2/translate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      auth_key: deeplApiKey,
-      text: text,
-      target_lang: targetLang || 'JA', // デフォルトは日本語
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Translation failed');
-  }
-
-  const data = await response.json();
-  return data.translations[0].text;
 }
 
+// オプションページを開く
 function openOptionsPage() {
   if (chrome.runtime.openOptionsPage) {
     // Chrome 42以降で利用可能
