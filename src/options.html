@@ -25,14 +25,29 @@
             padding: 5px 10px;
         }
     </style>
-    <script src="options.js"></script>
+    <script type="module"  src="options.js"></script>
 </head>
 <body>
+
+<h1>翻訳に利用する</h1>
+<label for="translatorType">翻訳に利用するサービスをを入力してください:(google, deepl)</label>
+<input type="text" id="translatorType">
+
+<h1>Google API キー設定</h1>
+<a target="_blank" href="https://cloud.google.com/translate/docs/?hl=ja">ドキュメント</a>
+<a target="_blank" href="https://cloud.google.com/translate/docs/reference/rest/v2/translate">ドキュメント</a>
+
+<a target="_blank"
+href="https://console.cloud.google.com/apis/api/translate.googleapis.com/credentials">Google APIキー発行ページ</a>
+<p>認証情報： https://console.developers.google.com/apis/credentials</p>
+<label for="googleApiKey">Google API キーを入力してください:</label>
+<input type="text" id="googleApiKey">
+
 <h1>DeepL API キー設定</h1>
 <a target="_blank"
    href="https://www.deepl.com/ja/your-account/keys">DeepL APIキー発行ページ</a>
-<label for="apiKey">DeepL API キーを入力してください:</label>
-<input type="text" id="apiKey">
+<label for="deeplApiKey">DeepL API キーを入力してください:</label>
+<input type="text" id="deeplApiKey">
 
 <button id="saveButton">保存</button>
 <p id="status"></p>

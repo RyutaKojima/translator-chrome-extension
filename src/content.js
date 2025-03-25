@@ -94,15 +94,17 @@ function translateSelectedText(text) {
   // ここに既存の翻訳処理を実装
   // 例: chrome.runtime.sendMessage を使用してバックグラウンドスクリプトに翻訳リクエストを送信
   chrome.runtime.sendMessage({
-    action: 'translate',
-    text: text,
-  }, response => {
-    // 翻訳結果を表示する処理
-    showTranslationResult(
-        response.translatedText || response.error,
-        true,
-    );
-  });
+        action: 'translate',
+        text: text,
+      },
+      (response) => {
+        // 翻訳結果を表示する処理
+        showTranslationResult(
+            response.translatedText || response.error?.message ||
+            'undefined error',
+            true,
+        );
+      });
 }
 
 // 翻訳結果を表示する関数
@@ -142,6 +144,12 @@ function init() {
     const button = document.getElementById('translator-selection-button');
     if (button && event.target !== button) {
       button.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('extension-openOptionsPage')) {
+      chrome.runtime.sendMessage({action: 'openOptionsPage'});
     }
   });
 
